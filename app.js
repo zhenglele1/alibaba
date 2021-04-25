@@ -6,21 +6,19 @@ var logger = require('morgan');
 var randomstring = require('randomstring')
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
+// mongodb
 // var mongo = require('./dbs/mongo.js')
-var app = express();
 var fs = require('fs'); //文件模块
 var bodyParser = require('body-parser')
+var app = express();
+var upload = require('./utils/upload')
 app.use(bodyParser.urlencoded({ extended: false }))
-// mongodb
 // view engine setup\
-//解决跨域
-app.use(require('cors')())
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 //-------------文件上传-----------------------
 // 指定上传文件的存储目录及文件名
 
-var upload = require('./utils/upload')
 
 app.post('/upload', upload.single('file'), (req, res) => {
   console.log('req:== ', req.file);
@@ -37,27 +35,29 @@ app.post('/upload', upload.single('file'), (req, res) => {
 })
 
 //-------------文件上传-----------------------
+indexRouter(app)
+//解决跨域
+app.use(require('cors')())
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-indexRouter(app)
 app.use(function (req, res, next) {
   let err = new Error('Not Found');
   err.status = 404;
   next(err);
 });
-
 // error handler
 app.use(function (err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
-
+  
   // render the error page
   res.status(err.status || 500);
   res.render('error');
 });
+
 
 module.exports = app;

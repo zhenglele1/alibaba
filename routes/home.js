@@ -1,6 +1,5 @@
 var express = require('express');
 var router = express.Router();
-var mongo = require("../dbs/mongo");
 /* GET home page. */
 /**
  * @api {get} / 获取导航分类
